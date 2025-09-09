@@ -1,108 +1,130 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { ref, set, get } from "firebase/database";
-import { auth, db, googleProvider } from "../firebase";
+import { auth, db } from "../firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    age: "",
+    height: "",
+    weight: "",
+  });
+  const [error, setError] = useState("");
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-
-      await set(ref(db, "users/" + user.uid), {
-        uid: user.uid,
-        name,
-        email,
-        createdAt: new Date().toISOString(),
-      });
-
-      navigate("/home");
-    } catch (err) {
-      setError(err.message);
-    }
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleGoogleSignup = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      // ✅ Create user with email & password
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
 
-      const userRef = ref(db, "users/" + user.uid);
-      const snapshot = await get(userRef);
+      const user = userCredential.user;
 
-      if (!snapshot.exists()) {
-        await set(userRef, {
-          uid: user.uid,
-          name: user.displayName,
-          email: user.email,
-          createdAt: new Date().toISOString(),
-        });
-      }
+      // ✅ Set displayName in Firebase Auth
+      await updateProfile(user, {
+        displayName: formData.name,
+      });
 
-      navigate("/home");
+      // ✅ Create Firestore profile document
+      await setDoc(doc(db, "users", user.uid), {
+        name: formData.name,
+        email: formData.email,
+        age: formData.age,
+        height: formData.height,
+        weight: formData.weight,
+        createdAt: new Date(),
+      });
+
+      navigate("/home"); // redirect after signup
     } catch (err) {
+      console.error("Signup Error:", err.message);
       setError(err.message);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-      <form onSubmit={handleSignup} className="space-y-4">
+    <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-xl">
+      <h2 className="text-2xl font-bold mb-4 text-green-800">Sign Up</h2>
+
+      {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
+          name="name"
           placeholder="Full Name"
+          value={formData.name}
+          onChange={handleChange}
           className="w-full p-2 border rounded"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
           required
         />
         <input
           type="email"
-          placeholder="Email"
+          name="email"
+          placeholder="Email Address"
+          value={formData.email}
+          onChange={handleChange}
           className="w-full p-2 border rounded"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
+          name="password"
           placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
           className="w-full p-2 border rounded"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <input
+          type="number"
+          name="age"
+          placeholder="Age"
+          value={formData.age}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="number"
+          name="height"
+          placeholder="Height (cm)"
+          value={formData.height}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="number"
+          name="weight"
+          placeholder="Weight (kg)"
+          value={formData.weight}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+        />
+
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
         >
           Sign Up
         </button>
       </form>
-
-      <div className="mt-6 text-center">
-        <p className="mb-2">Or sign up with</p>
-        <button
-          onClick={handleGoogleSignup}
-          className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600"
-        >
-          Continue with Google
-        </button>
-      </div>
     </div>
   );
 }

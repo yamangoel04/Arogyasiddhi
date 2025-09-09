@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Foods from "./pages/Foods.jsx";
 import Home from "./pages/Home";
 import Landing from "./pages/Landing";
@@ -13,6 +13,11 @@ import Login from "./pages/Login.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 
 export default function App() {
+  const location = useLocation(); // <-- useLocation hook
+
+  // Pages where footer should be hidden
+  const noFooterPaths = ["/", "/login", "/landing", "/welcome"];
+
   return (
     <div className="pb-16">
       <div className="p-4">
@@ -70,10 +75,8 @@ export default function App() {
         </Routes>
       </div>
 
-      {/* Footer hidden on login, landing, welcome */}
-      {!["/", "/login", "/landing", "/welcome"].includes(window.location.pathname) && (
-        <Footer />
-      )}
+      {/* Footer: reactive based on location */}
+      {!noFooterPaths.includes(location.pathname) && <Footer />}
     </div>
   );
 }
