@@ -136,7 +136,10 @@ export default function Login() {
             <div className="mb-2">
               <h2 className="text-2xl font-bold text-white mb-1">Welcome to </h2>
                <h1 className="text-2xl font-bold text-green-900 mb-1">Arogyapatha </h1>
-                <h2 className="text-2xl font-bold text-white mb-1"> A Journey Towards Ayurveda </h2>
+               <h2 className="text-2xl italic font-semibold text-emerald-300 drop-shadow-md mb-1">
+  A Journey Towards Ayurveda
+</h2>
+
               <h2 className="text-xl font-semibold text-white/90">
                 {isSignUp ? "Create your account" : "Sign in to continue"}
               </h2>

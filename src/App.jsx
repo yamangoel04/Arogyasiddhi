@@ -11,10 +11,11 @@ import Welcome from "./pages/Welcome";
 import Footer from "./components/Footer.jsx";
 import Login from "./pages/Login.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
-
+import { useAuth } from "./context/AuthContext";
+import DoctorConsultation from "./pages/DoctorConsultation";
 export default function App() {
   const location = useLocation(); // <-- useLocation hook
-
+const { user } = useAuth();
   // Pages where footer should be hidden
   const noFooterPaths = ["/", "/login", "/landing", "/welcome"];
 
@@ -59,6 +60,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <Planner />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/consultation"
+            element={
+              <PrivateRoute>
+                <DoctorConsultation user={user} />
               </PrivateRoute>
             }
           />

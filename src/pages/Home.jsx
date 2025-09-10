@@ -21,7 +21,7 @@ import WeeklyTrendChart from "../components/charts/WeeklyTrendChart";
 import WaterTracker from "../components/tracking/WaterTracker";
 import QuickAddMeal from "../components/meal/QuickAddMeal";
 import { HealthScoreCard } from "@/components/charts/HealthScoreChart";
-
+import { Stethoscope } from "lucide-react";
 export default function Home() {
   const navigate = useNavigate();
   const { authUser, user: dbUser } = useAuth();
@@ -296,6 +296,17 @@ export default function Home() {
           </div>
         </div>
       </motion.div>
+      <div className="mt-6">
+        <Link to="/consultation">
+          <Button
+  onClick={() => navigate("/consultation")}
+  className="w-full bg-gradient-to-r from-green-500 to-green-700 text-white rounded-2xl py-4 px-6 font-semibold shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2"
+>
+  <Stethoscope className="w-5 h-5" />
+  Book a Doctor Consultation
+</Button>
+        </Link>
+      </div>
 
       {/* Quick Add Meal Modal */}
       <AnimatePresence>

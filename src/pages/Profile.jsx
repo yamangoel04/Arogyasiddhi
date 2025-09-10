@@ -3,12 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Edit,
-  MessageCircle,
-  TrendingUp,
-  LogOut,
-} from "lucide-react";
+import { Input } from "@/components/ui/input"; // ✅ for editing fields
+import { Edit, MessageCircle, TrendingUp, LogOut, Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -18,6 +14,12 @@ export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Editable profile states
+  const [isEditing, setIsEditing] = useState(false);
+  const [age, setAge] = useState(25);
+  const [weight, setWeight] = useState(72);
+  const [height, setHeight] = useState(160);
 
   // ✅ Listen to Firebase Auth state
   useEffect(() => {
@@ -31,6 +33,12 @@ export default function Profile() {
   const handleLogout = async () => {
     await signOut(auth);
     navigate(createPageUrl("Landing"));
+  };
+
+  const handleSaveProfile = () => {
+    setIsEditing(false);
+    // ✅ later: update Firestore here
+    console.log("Profile updated:", { age, weight, height });
   };
 
   if (loading) {
@@ -74,27 +82,105 @@ export default function Profile() {
               <p className="text-sm text-green-600">{user?.email}</p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-sm text-green-800 pt-2">
-              <div className="font-medium">Age: 25</div>
-              <div className="font-medium">Weight: 72kg</div>
-              <div className="font-medium">Height: 160cm</div>
-            </div>
+            {/* Editable fields */}
+            {isEditing ? (
+  <div className="space-y-4 pt-4">
+    {/* Age */}
+    <div className="text-left">
+      <label className="block text-sm font-medium text-green-700 mb-1">
+        Age
+      </label>
+      <Input
+        type="text"
+        value={age}
+        onChange={(e) => setAge(e.target.value)}
+        className="w-full rounded-xl border-green-300 focus:ring-2 focus:ring-green-500"
+        placeholder="Enter your age"
+      />
+    </div>
+
+    {/* Weight */}
+    <div className="text-left">
+      <label className="block text-sm font-medium text-green-700 mb-1">
+        Weight (kg)
+      </label>
+      <Input
+        type="text"
+        value={weight}
+        onChange={(e) => setWeight(e.target.value)}
+        className="w-full rounded-xl border-green-300 focus:ring-2 focus:ring-green-500"
+        placeholder="Enter your weight"
+      />
+    </div>
+
+    {/* Height */}
+    <div className="text-left">
+      <label className="block text-sm font-medium text-green-700 mb-1">
+        Height (cm)
+      </label>
+      <Input
+        type="text"
+        value={height}
+        onChange={(e) => setHeight(e.target.value)}
+        className="w-full rounded-xl border-green-300 focus:ring-2 focus:ring-green-500"
+        placeholder="Enter your height"
+      />
+    </div>
+
+    {/* Save / Cancel Buttons */}
+    <div className="flex space-x-3 pt-2">
+      <Button
+        className="flex-1 bg-green-600 hover:bg-green-700 rounded-xl font-semibold"
+        onClick={handleSaveProfile}
+      >
+        Save Changes
+      </Button>
+      <Button
+        variant="outline"
+        className="flex-1 border-green-300 text-green-700 hover:bg-green-50 rounded-xl font-semibold"
+        onClick={() => setIsEditing(false)}
+      >
+        Cancel
+      </Button>
+    </div>
+  </div>
+) : (
+  <div className="grid grid-cols-3 gap-2 text-sm text-green-800 pt-2">
+    <div className="font-medium">Age: {age || "-"}</div>
+    <div className="font-medium">Weight: {weight || "-"}kg</div>
+    <div className="font-medium">Height: {height || "-"}cm</div>
+  </div>
+)}
+
 
             <Badge className="bg-green-100 text-green-800 border-green-200 py-1 px-3 text-sm">
               Dominant Dosha: VATA–PITTA
             </Badge>
 
             <div className="flex space-x-3 w-full pt-4">
-              <Button className="flex-1 bg-green-600 hover:bg-green-700 rounded-xl font-semibold">
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Profile
-              </Button>
+              {isEditing ? (
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700 rounded-xl font-semibold"
+                  onClick={handleSaveProfile}
+                >
+                  Save
+                </Button>
+              ) : (
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700 rounded-xl font-semibold"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </Button>
+              )}
               <Button
                 variant="outline"
                 className="flex-1 border-green-300 text-green-700 hover:bg-green-50 rounded-xl font-semibold"
+                onClick={() => navigate("/consultation")}
               >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Contact
+                <Stethoscope className="w-4 h-4 mr-2" />
+                Consultation
               </Button>
             </div>
           </div>
@@ -114,22 +200,6 @@ export default function Profile() {
             <span className="text-green-900 font-bold">90%</span>
           </div>
           <Progress value={90} className="h-2 bg-green-100" />
-
-          <div className="text-center py-4">
-            <div className="text-green-700 text-sm mb-2">April Progress</div>
-            <div className="h-16 bg-gradient-to-r from-green-200 via-green-300 to-green-400 rounded-lg flex items-end justify-center space-x-1 p-2">
-              {[65, 70, 85, 90, 95, 88, 92].map((height, index) => (
-                <div
-                  key={index}
-                  className="bg-green-600 rounded-t"
-                  style={{
-                    height: `${height * 0.6}%`,
-                    width: "8px",
-                  }}
-                ></div>
-              ))}
-            </div>
-          </div>
         </CardContent>
       </Card>
 
