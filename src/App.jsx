@@ -1,6 +1,7 @@
 // src/App.jsx
 import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import RoleSelection from "./pages/RoleSelection.jsx";
 import Foods from "./pages/Foods.jsx";
 import Home from "./pages/Home";
 import Landing from "./pages/Landing";
@@ -13,29 +14,37 @@ import Login from "./pages/Login.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import { useAuth } from "./context/AuthContext";
 import DoctorConsultation from "./pages/DoctorConsultation";
+import DoctorProfile from "./pages/DoctorProfile.jsx"; // ✅ proper import
+
 export default function App() {
-  const location = useLocation(); // <-- useLocation hook
-const { user } = useAuth();
-  // Pages where footer should be hidden
-  const noFooterPaths = ["/", "/login", "/landing", "/welcome"];
+  const location = useLocation();
+  const { user, role } = useAuth();
+
+  // ✅ Hide footer on doctor-profile too
+  const noFooterPaths = ["/", "/login", "/landing", "/welcome", "/role-selection", "/doctor-profile"];
 
   return (
     <div className="pb-16">
       <div className="p-4">
         <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Login />} />
+          {/* Step 1: Role Selection */}
+          <Route path="/" element={<RoleSelection />} />
+          <Route path="/role-selection" element={<RoleSelection />} />
+
+          {/* Step 2: Login */}
           <Route path="/login" element={<Login />} />
+
+          {/* Optional onboarding */}
           <Route path="/landing" element={<Landing />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/welcome" element={<Welcome />} />
 
-          {/* Private routes */}
+          {/* Step 3: Role-based private routes */}
           <Route
             path="/home"
             element={
               <PrivateRoute>
-                <Home />
+                {role === "doctor" ? <Navigate to="/doctor-profile" /> : <Home />}
               </PrivateRoute>
             }
           />
@@ -71,6 +80,14 @@ const { user } = useAuth();
               </PrivateRoute>
             }
           />
+          <Route
+            path="/doctor-profile"
+            element={
+              <PrivateRoute>
+                <DoctorProfile />
+              </PrivateRoute>
+            }
+          />
 
           {/* Catch-all */}
           <Route
@@ -84,7 +101,7 @@ const { user } = useAuth();
         </Routes>
       </div>
 
-      {/* Footer: reactive based on location */}
+      {/* ✅ Footer hidden when on doctor-profile */}
       {!noFooterPaths.includes(location.pathname) && <Footer />}
     </div>
   );
