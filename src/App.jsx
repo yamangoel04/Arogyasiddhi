@@ -14,7 +14,7 @@ import Login from "./pages/Login.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import { useAuth } from "./context/AuthContext";
 import DoctorConsultation from "./pages/DoctorConsultation";
-import DoctorProfile from "./pages/DoctorProfile.jsx"; // ✅ proper import
+import DoctorProfile from "./pages/Doctorprofile.jsx";// ✅ proper import
 
 export default function App() {
   const location = useLocation();
