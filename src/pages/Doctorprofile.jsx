@@ -9,10 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tabs,
@@ -30,45 +27,45 @@ import {
   Mail,
 } from "lucide-react";
 
-// ✅ FIXED: consistent name
-const doctorProfileData = {
-  name: "Dr. Maria Rodriguez",
-  title: "Cardiologist",
-  specialization: "Interventional Cardiology",
-  experience: "15 years",
-  education: [
-    "MD - Harvard Medical School (2008)",
-    "Residency - Johns Hopkins Hospital (2012)",
-    "Fellowship - Mayo Clinic (2014)",
-  ],
-  certifications: [
-    "Board Certified in Cardiology",
-    "Board Certified in Interventional Cardiology",
-    "Advanced Cardiac Life Support (ACLS)",
-    "Basic Life Support (BLS)",
-  ],
-  contact: {
-    phone: "+1 (555) 987-6543",
-    email: "dr.rodriguez@medicare.com",
-    address: "123 Medical Center Dr, Suite 400, Healthcare City, HC 12345",
-  },
-  bio: "Dr. Maria Rodriguez is a highly experienced cardiologist specializing in interventional procedures. She has been practicing for over 15 years and has performed thousands of cardiac catheterizations and interventions.",
-  achievements: [
-    "Top Doctor Award 2023",
-    "Excellence in Patient Care 2022",
-    "Research Publication Award 2021",
-    "Community Service Recognition 2020",
-  ],
-};
-
 export default function DoctorProfile() {
+  // ✅ Initial data
+  const doctorProfileData = {
+    name: "Dr. Maria Rodriguez",
+    title: "Cardiologist",
+    specialization: "Interventional Cardiology",
+    experience: "15 years",
+    education: [
+      "MD - Harvard Medical School (2008)",
+      "Residency - Johns Hopkins Hospital (2012)",
+      "Fellowship - Mayo Clinic (2014)",
+    ],
+    certifications: [
+      "Board Certified in Cardiology",
+      "Board Certified in Interventional Cardiology",
+      "Advanced Cardiac Life Support (ACLS)",
+      "Basic Life Support (BLS)",
+    ],
+    contact: {
+      phone: "+1 (555) 987-6543",
+      email: "dr.rodriguez@medicare.com",
+      address: "123 Medical Center Dr, Suite 400, Healthcare City, HC 12345",
+    },
+    bio: "Dr. Maria Rodriguez is a highly experienced cardiologist specializing in interventional procedures. She has been practicing for over 15 years and has performed thousands of cardiac catheterizations and interventions.",
+    achievements: [
+      "Top Doctor Award 2023",
+      "Excellence in Patient Care 2022",
+      "Research Publication Award 2021",
+      "Community Service Recognition 2020",
+    ],
+  };
+
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(doctorProfileData); // ✅ FIXED
+  const [formData, setFormData] = useState(doctorProfileData);
 
   const handleSave = () => {
     setIsEditing(false);
     console.log("Saved:", formData);
-    // TODO: send to backend
+    // TODO: send updated data to backend API
   };
 
   return (
