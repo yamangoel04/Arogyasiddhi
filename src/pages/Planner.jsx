@@ -29,7 +29,8 @@ import {
   Smile,
   Trophy,
 } from "lucide-react";
-import Switch  from "@/components/ui/switch";
+import Switch from "@/components/ui/Switch";
+
 import {
   ResponsiveContainer,
   LineChart,
